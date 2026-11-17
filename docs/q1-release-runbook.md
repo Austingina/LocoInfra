@@ -2,7 +2,7 @@
 
 ## 状态与前提
 
-本地候选已准备；尚无 GitHub Release/下载 URL。2026-11-17 检查：`gh` 不存在；`git credential fill` 退出 128、未返回凭据；GH_TOKEN/GITHUB_TOKEN 未设置；API 尝试返回 401，`git push --dry-run origin HEAD:main` 报 could not read Username。公开仓库 fetch 成功不等于有写权限。
+2026-11-17：先前认证阻塞已解除，`gh api user` 确认 Austingina，`gh auth setup-git` 已完成。已创建 private 仓库 https://github.com/Austingina/LocoInfra；正在推送和上传验证。四个 ZIP 的本地大小及 SHA256 均与 q1-release-assets.json 一致。原 origin 保留为 upstream，新的 origin 指向用户仓库；不覆盖历史、不 force push。本次不重跑物理/训练。
 
 认证必须由账号所有者在可信本机配置 Git credential helper 或环境令牌；不要把 token 发到聊天、放 remote URL、命令参数、日志或提交里。对目标仓库至少需要 Contents 写权限。后续 API 调用从 helper 捕获结果到内存，永不打印凭据。此 runbook 不修改全局认证。
 

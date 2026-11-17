@@ -26,7 +26,7 @@ flowchart LR
 
 ## Q1 2026-11-17 更新候选
 
-完整四倍节奏舞蹈包、48400 velocity research checkpoint、44000 离线参考基包与连续参考增量包见 [发布说明](docs/q1-release-20261117.md) 和 [发布 runbook](docs/q1-release-runbook.md)。**GitHub 资产上传尚受认证阻塞；velocity 未验收，不替换 dual_v3b；硬件未验收。**
+完整四倍节奏舞蹈包、48400 velocity research checkpoint、44000 离线参考基包与连续参考增量包见 [发布说明](docs/q1-release-20261117.md) 和 [发布 runbook](docs/q1-release-runbook.md)。**发布目标为 Austingina/LocoInfra（private），认证已恢复；资产状态见发布说明。velocity 未验收，不替换 dual_v3b；硬件未验收。**
 
 ## 亮点
 
