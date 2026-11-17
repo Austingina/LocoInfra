@@ -1,0 +1,10 @@
+/home/cityur/Gina/q1-storage-handoff/unpacked/Q1_storage_GPU_handoff_2026-11-13/LocoInfra_Q1_Dance/infra/SuperMimic-Q1/.venv/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+{
+  "mujoco": "3.16.0",
+  "sha256": "0a92661711e834474e471f384b12bcdb316127485a5670b1c7a6e45108ab1cc0",
+  "bytes": 96490768,
+  "method": "CPU compile native Scene only; no mj_step or GPU env",
+  "source": "base/source/training/supermimic/envs/tracking_env_cfg.py",
+  "Q1_XML": "/home/cityur/Gina/q1-github-release-20261117/fresh/q1_stage1_44000_reference_prepare/q1/q1_v3/xml/q1_v3_collision.xml"
+}

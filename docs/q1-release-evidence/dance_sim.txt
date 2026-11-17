@@ -1,0 +1,30 @@
+[teleop] WALK       左摇杆 vx / vy，右摇杆 yaw，十字键 ↑↓ 高度、←→ 速度，Y 高度回正；L2+X 跳舞（没有技能包，不能趴下）
+[teleop] STRAIGHTEN 站直
+[teleop] DANCE      舞蹈 30.1 s
+[teleop] WALK       左摇杆 vx / vy，右摇杆 yaw，十字键 ↑↓ 高度、←→ 速度，Y 高度回正；L2+X 跳舞，L2+B 趴下
+{
+  "通过": true,
+  "events": [
+    {
+      "tick": 200,
+      "from": "WALK",
+      "to": "STRAIGHTEN"
+    },
+    {
+      "tick": 275,
+      "from": "STRAIGHTEN",
+      "to": "DANCE"
+    },
+    {
+      "tick": 1782,
+      "from": "DANCE",
+      "to": "WALK"
+    }
+  ],
+  "dance_steps": 1507,
+  "reference_frames": 1508,
+  "min_height": 0.3616292981297509,
+  "min_upright": 0.9142839770132007,
+  "final_mode": "WALK",
+  "sim_seconds": 39.64000000000183
+}

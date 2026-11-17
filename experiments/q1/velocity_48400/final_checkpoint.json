@@ -1,0 +1,12 @@
+{
+  "checkpoint": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage2_velocity_from44000_20261116_001106/logs/stage2_velocity/ckpt_latest.pt",
+  "sha256": "6c6c113431d64ae908f8d4aa2aa8d0f27306929ad4c1a5c1249f60ec745e9527",
+  "iteration": 48400,
+  "num_updates": 19264,
+  "tele_updates": 1744,
+  "finite": true,
+  "protected_unchanged": true,
+  "train_exit": "0",
+  "actor_update_verified": true,
+  "acceptance": false
+}

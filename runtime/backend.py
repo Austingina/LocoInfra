@@ -106,6 +106,9 @@ class MuJoCoBackend(Backend):
         self.data.ctrl[self.ctrl] = joint_target
         for _ in range(self.decim):
             mujoco.mj_step(self.model, self.data)
+        # 刷新 xmat / xquat 等派生量，保证下一拍 BodyRef 的躯干相对朝向来自当前 qpos。
+        # 不额外积分，也不改变 qpos / qvel / ctrl / time。
+        mujoco.mj_forward(self.model, self.data)
 
     def damp(self) -> None:
         self.model.actuator_gainprm[self.ctrl, 0] = 0.0
@@ -336,6 +339,11 @@ class PrimeBotBackend(Backend):
             p.join(timeout=1.0)
             if p.is_alive():
                 p.terminate()
+        for p in self._procs:
+            p.join(timeout=0.5)
+            if p.is_alive():
+                p.kill()
+                p.join(timeout=0.5)
 
     def __enter__(self) -> "PrimeBotBackend":
         return self

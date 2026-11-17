@@ -1,0 +1,7 @@
+# Q1 velocity 48400 research provenance
+
+Frozen completed run: stage2_velocity_from44000_20261116_001106. This is NOT an accepted deployment and does not replace dual_v3b. Full checkpoint and recorded evaluation evidence are release-only assets; see ../../../../docs/q1-release-20261117.md.
+
+`parsed_config.json` and `argv.json` preserve the exact experiment configuration; `MANIFEST.json` records source/robot/reference hashes. The current repository preserves the source-row replay termination fix. `train_entry.py`, `ref_after.py`, and `tele_eval.py` are historical audit wrappers, not portable launchers. They include original absolute paths and strict import/source identity checks: do not blindly run them after relocation. Reproduction requires installing the original native mjlab/SuperMimic dependencies, matching source/data hashes, mapping npz_dir/log_dir/resume and robot paths to local equivalents, and explicitly approving a separate bounded training/evaluation run. This release performs no such new training.
+
+Stage1 44000 checkpoint and matching four references are in the separate reference_prepare asset. It contains the training source snapshot and dependencies provenance. The original run restores WM/E_ref/decoder/ref critic and their documented optimizer state, introduces fresh E_tele/critics and policy optimizer, and does not promise bitwise replay/RNG continuation. See COMPLETION_REPORT.md for failures and acceptance=false.

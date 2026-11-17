@@ -1,0 +1,226 @@
+{
+  "all_checkpoint_tensors_finite": true,
+  "tensor_count": 295,
+  "iteration": 48400,
+  "updates": 19264,
+  "source_iteration": 44000,
+  "hash_protection_pass": true,
+  "media": [
+    {
+      "attachment": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_iter48400/stage2_velocity_iter48400_four_clips.mp4",
+      "sha256": "b5ba05bff9ea9dd29dddc488c19a40988598ae7803d0688a13eb5a1cf8b905c0",
+      "frames": 581,
+      "decode_exit": 0
+    },
+    {
+      "attachment": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_iter48400/stage2_velocity_iter48400_straight.mp4",
+      "sha256": "4326c3eb09c2eebb331304095d8256a3b43f24ca2569f0f13fdeab4ed85992cd",
+      "frames": 131,
+      "decode_exit": 0
+    },
+    {
+      "attachment": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_iter48400/stage2_velocity_iter48400_backward.mp4",
+      "sha256": "17738b283dff4e8d8587da2bb029a6d83ddaf9938c6b772e1b1ec3495782b91d",
+      "frames": 150,
+      "decode_exit": 0
+    },
+    {
+      "attachment": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_iter48400/stage2_velocity_iter48400_left.mp4",
+      "sha256": "2f62c98da408a1bdf18e16df34e1e6ec43db3df7b44b6527a04f780bf58d5289",
+      "frames": 150,
+      "decode_exit": 0
+    },
+    {
+      "attachment": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_iter48400/stage2_velocity_iter48400_right.mp4",
+      "sha256": "5fe2ebe9efa6494c11f43685f55b2d06f3c7120f3172e40d0262cfa218e8707f",
+      "frames": 150,
+      "decode_exit": 0
+    },
+    {
+      "attachment": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_tele_iter48400/forward.mp4",
+      "sha256": "eb67e648792a6a8f212cbe068f38f213be9894edd3f7b2477b75f20730b373da",
+      "frames": 300,
+      "decode_exit": 0
+    },
+    {
+      "attachment": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_tele_iter48400/backward.mp4",
+      "sha256": "422124678740f4ea004271dbf2a1dafba7f5b2408923be76392db0292f093205",
+      "frames": 300,
+      "decode_exit": 0
+    },
+    {
+      "attachment": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_tele_iter48400/side_left.mp4",
+      "sha256": "ee38e08a542b5d603ae89b74750b8c8de4b2c143baef355f18671b4fc38ac59b",
+      "frames": 300,
+      "decode_exit": 0
+    },
+    {
+      "attachment": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_tele_iter48400/side_right.mp4",
+      "sha256": "bf2503b9c1a51840b2e0d998f21ba507cf5b430119f4787c6a67973ffa8a877c",
+      "frames": 300,
+      "decode_exit": 0
+    },
+    {
+      "attachment": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_tele_iter48400/turn_left.mp4",
+      "sha256": "f244042367fb27d82cc48d4f9ebd2b8375dad89e8fdf4560087a98c0184b0576",
+      "frames": 300,
+      "decode_exit": 0
+    },
+    {
+      "attachment": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_tele_iter48400/turn_right.mp4",
+      "sha256": "8756c997a456dce2258a371ccd916bfb47c0c2800fb777a2a34fc124940aefb9",
+      "frames": 300,
+      "decode_exit": 0
+    },
+    {
+      "attachment": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_tele_iter48400/spot_left.mp4",
+      "sha256": "00574d378beb94b6a3715440036a8ff6bff923ba9cbb8893e0cc2df90851bbd1",
+      "frames": 300,
+      "decode_exit": 0
+    },
+    {
+      "attachment": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_tele_iter48400/spot_right.mp4",
+      "sha256": "7bd0427ec8868f3b0a5ab8a49851d02505425bc7e79558ea3b15948d0d8333fe",
+      "frames": 300,
+      "decode_exit": 0
+    },
+    {
+      "attachment": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_tele_iter48400/switch.mp4",
+      "sha256": "c126f35a41f8b99131ea2aa59b9177ff4e4c812a13ca2af25cc424c313054964",
+      "frames": 300,
+      "decode_exit": 0
+    }
+  ],
+  "tele_combined": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_tele_iter48400/velocity_9cases_1x.mp4",
+  "tele_combined_sha256": "d908fc65f9deee98bbb9ead3888945425734443a4fdee34d78ef05d9930b8d6f",
+  "tele_combined_probe": {
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "h264",
+        "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+        "profile": "High",
+        "codec_type": "video",
+        "codec_tag_string": "avc1",
+        "codec_tag": "0x31637661",
+        "width": 640,
+        "height": 480,
+        "coded_width": 640,
+        "coded_height": 480,
+        "closed_captions": 0,
+        "has_b_frames": 2,
+        "pix_fmt": "yuv420p",
+        "level": 31,
+        "chroma_location": "left",
+        "refs": 4,
+        "is_avc": "true",
+        "nal_length_size": "4",
+        "r_frame_rate": "50/1",
+        "avg_frame_rate": "50/1",
+        "time_base": "1/12800",
+        "start_pts": 0,
+        "start_time": "0.000000",
+        "duration_ts": 691200,
+        "duration": "54.000000",
+        "bit_rate": "719460",
+        "bits_per_raw_sample": "8",
+        "nb_frames": "2700",
+        "nb_read_frames": "2700",
+        "disposition": {
+          "default": 1,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0
+        },
+        "tags": {
+          "language": "und",
+          "handler_name": "VideoHandler",
+          "vendor_id": "[0][0][0][0]"
+        }
+      }
+    ],
+    "format": {
+      "filename": "/home/cityur/.hermes/profiles/codexgina/media/stage2_velocity_from44000_20261116_001106_tele_iter48400/velocity_9cases_1x.mp4",
+      "nb_streams": 1,
+      "nb_programs": 0,
+      "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+      "format_long_name": "QuickTime / MOV",
+      "start_time": "0.000000",
+      "duration": "54.000000",
+      "size": "4889589",
+      "bit_rate": "724383",
+      "probe_score": 100,
+      "tags": {
+        "major_brand": "isom",
+        "minor_version": "512",
+        "compatible_brands": "isomiso2avc1mp41",
+        "encoder": "Lavf58.76.100"
+      }
+    }
+  },
+  "switch_segments": [
+    {
+      "start_s": 0.0,
+      "target": [
+        0.40000006556510925,
+        0.0,
+        0.0
+      ],
+      "measured": [
+        0.242596834897995,
+        -0.052661098539829254,
+        -0.12356745451688766
+      ],
+      "mae": [
+        0.17076212167739868,
+        0.08145175874233246,
+        0.4777905344963074
+      ]
+    },
+    {
+      "start_s": 2.0,
+      "target": [
+        -0.2999997138977051,
+        0.0,
+        0.0
+      ],
+      "measured": [
+        -0.08294721692800522,
+        -0.000597145117353648,
+        0.06208721175789833
+      ],
+      "mae": [
+        0.21705274283885956,
+        0.062402743846178055,
+        0.1787026822566986
+      ]
+    },
+    {
+      "start_s": 4.0,
+      "target": [
+        0.0,
+        0.2999997138977051,
+        0.0
+      ],
+      "measured": [
+        -0.09275439381599426,
+        0.012805725447833538,
+        -0.03219635412096977
+      ],
+      "mae": [
+        0.09378882497549057,
+        0.28719428181648254,
+        0.19979946315288544
+      ]
+    }
+  ],
+  "no_training_or_rollout_launched": true
+}

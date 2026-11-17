@@ -148,7 +148,8 @@ class ReplayBuffer:
             a_clean=self.a[ee[:-1], tt[:-1]],
             xi=self.xi[e, t],
             reward=self.r[ee[:-1], tt[:-1]],
-            done=self.done[ee[1:], tt[1:]],
+            # Recorder stores done_next on the source/action row, not the next-state row.
+            done=self.done[ee[:-1], tt[:-1]],
             frame=self.frame[ee[:-1], tt[:-1]],
             env=e,
             virt_h=self.virt_h[ee[:-1], tt[:-1]],

@@ -1,0 +1,18 @@
+{
+  "Q1_4x_20261117.zip": {
+    "sha256": "ee3544f5b62fa0931d67d196af38766ea36a765a1952b58396ff174cbb668140",
+    "bytes": 185953258
+  },
+  "q1_stage1_44000_reference_prepare.zip": {
+    "sha256": "cc2ab33ebe64d8d969b5aa9bd43ad065bf7bd20afc735bac5c9035bb9a0e0120",
+    "bytes": 225137278
+  },
+  "q1_stage1_44000_continuous_delta.zip": {
+    "sha256": "e7648171ca0f7262df291f4d34511aeb08983acb30d84da81eb40f7b6753a718",
+    "bytes": 5848251
+  },
+  "q1_velocity_48400_research.zip": {
+    "sha256": "d29c10ebfdd90eb44a26b06766791ea41792b8f446b1977ed1ae3977aa460fef",
+    "bytes": 199908010
+  }
+}

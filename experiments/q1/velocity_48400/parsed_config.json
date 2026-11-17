@@ -1,0 +1,333 @@
+{
+  "run_name": "stage2_velocity",
+  "log_root": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage2_velocity_from44000_20261116_001106/logs",
+  "seed": 0,
+  "device": "cuda:0",
+  "data": {
+    "npz_dir": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_193726/data",
+    "clips": null,
+    "limit": null,
+    "manifest": null,
+    "library": null
+  },
+  "env": {
+    "num_envs": 4096,
+    "episode_length_s": 10.0,
+    "action_noise_std": 0.1,
+    "obs_noise": true,
+    "reset_noise": true,
+    "domain_randomization": true,
+    "sampling_mode": "return",
+    "replay_capacity": 1000,
+    "future_frames": 4,
+    "compact_library": false,
+    "anchor_obs": true,
+    "anchor_ori_only": true,
+    "anchor_pos_noise": 0.25,
+    "physics_dr": true
+  },
+  "reward": {
+    "std_body_pos": 0.3,
+    "std_body_ori": 0.4,
+    "std_body_lin_vel": 1.0,
+    "std_body_ang_vel": 3.14,
+    "std_root_pos": 0.3,
+    "std_root_ori": 0.4,
+    "w_body_pos": 1.0,
+    "w_body_ori": 1.0,
+    "w_body_lin_vel": 1.0,
+    "w_body_ang_vel": 1.0,
+    "w_root_pos": 0.5,
+    "w_root_ori": 0.5,
+    "w_action_rate": -0.1,
+    "w_joint_limit": -2.0,
+    "w_torque": -0.02,
+    "w_power": -0.0001,
+    "w_over_rated": -0.05,
+    "hand_ori_weight": 0.2,
+    "w_extra_contact": 0.0,
+    "w_impact": 0.0,
+    "contact_margin": 0.01,
+    "contact_ref_free": 0.03,
+    "contact_ref_free_band": 0.02,
+    "impact_band": 0.03,
+    "impact_speed": 0.6,
+    "dt": 0.02
+  },
+  "world_model": {
+    "hidden": [
+      2048,
+      2048,
+      2048
+    ],
+    "term_hidden": [
+      64,
+      64
+    ],
+    "state_spec": {
+      "dt": 0.02,
+      "err_scale": [
+        0.05,
+        0.1,
+        0.5,
+        1.0,
+        0.1,
+        2.0
+      ],
+      "out_scale": [
+        0.3,
+        0.5,
+        2.0,
+        0.01,
+        0.02,
+        0.02
+      ],
+      "in_scale": [
+        1.0,
+        1.0,
+        1.0,
+        2.0,
+        1.0,
+        5.0
+      ],
+      "explicit_integration": true,
+      "xi_offset": [
+        0.75,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.15,
+        0.5,
+        0.5
+      ],
+      "xi_scale": [
+        0.45,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.2,
+        0.2,
+        0.2,
+        0.2,
+        0.15,
+        0.5,
+        0.5
+      ]
+    },
+    "term_loss_weight": 1.0,
+    "height_threshold": 0.15,
+    "tilt_threshold": 0.8
+  },
+  "wm_trainer": {
+    "window": 8,
+    "batches_per_update": 10,
+    "batch_size": 2048,
+    "lr": 0.0001,
+    "grad_clip": 1.0,
+    "weight_decay": 0.0,
+    "compile": "default"
+  },
+  "policy": {
+    "encoder_hidden": [
+      2048,
+      1024,
+      512,
+      256
+    ],
+    "decoder_hidden": [
+      2048,
+      1024,
+      512,
+      256
+    ],
+    "latent_dim": 32,
+    "history": 10,
+    "obs_term_scale": [
+      1.0,
+      5.0,
+      2.0,
+      1.0,
+      1.0
+    ],
+    "goal_term_scale": [
+      1.0,
+      5.0,
+      1.0,
+      2.0,
+      1.0,
+      1.0
+    ],
+    "decoder_last_gain": 0.01,
+    "goal_dim": 540,
+    "tele_hidden": null,
+    "tele_embed": 64
+  },
+  "critic": {
+    "hidden": [
+      256,
+      128
+    ]
+  },
+  "policy_trainer": {
+    "horizon": 32,
+    "batch_size": 4096,
+    "history": 10,
+    "future_frames": 10,
+    "gamma": 0.99,
+    "gae_lambda": 0.95,
+    "lr": 0.0001,
+    "betas": [
+      0.9,
+      0.95
+    ],
+    "grad_clip_norm": 1.0,
+    "grad_clip_value": 0.1,
+    "critic_lr": 0.0001,
+    "critic_grad_clip": 1.0,
+    "critic_epochs": 5,
+    "critic_minibatches": 4,
+    "use_critic": true,
+    "obs_noise": true,
+    "compile": "default",
+    "anchor_obs": false,
+    "anchor_ori_only": false,
+    "anchor_pos_noise": 0.25,
+    "freeze_ref": false
+  },
+  "schedule": {
+    "total_iterations": 145000,
+    "updates_per_env_step": 0.4,
+    "policy_updates_per_wm_update": 1,
+    "warmup_iterations": 40,
+    "lr_final_ratio": 0.03,
+    "lr_decay_fraction": 0.78125,
+    "log_interval": 50,
+    "checkpoint_interval": 100,
+    "numbered_checkpoint_interval": 500,
+    "max_hours": 0.6333333333333333,
+    "eval_interval_min": 60.0,
+    "stop_on_pass": false,
+    "stop_return": 0.8,
+    "lr_from_resume": true
+  },
+  "tele": {
+    "enabled": true,
+    "distill_env_fraction": 0.25,
+    "free_env_fraction": 0.25,
+    "distill_batch_fraction": 0.25,
+    "free_batch_fraction": 0.25,
+    "encoder_hidden": [
+      512,
+      512
+    ],
+    "embed": 64,
+    "align_weight": 0.1,
+    "critic_warmup_updates": 300,
+    "enable_slots": [],
+    "resample_steps": 250,
+    "drop_prob": 0.15,
+    "base_only_prob": 0.25,
+    "balance_ratio": 0.5,
+    "ref_prob": 0.5,
+    "stand_prob": 0.1,
+    "vx_range": [
+      -0.6,
+      1.0
+    ],
+    "vy_range": [
+      -0.5,
+      0.5
+    ],
+    "wz_range": [
+      -1.5,
+      1.5
+    ],
+    "height_range": [
+      -0.15,
+      0.02
+    ],
+    "height_zero_prob": 0.4,
+    "height_rate": 0.25,
+    "pitch_range": [
+      -0.15,
+      0.6
+    ],
+    "roll_range": [
+      -0.25,
+      0.25
+    ],
+    "torso_zero_prob": 0.4,
+    "hand_default_prob": 0.3,
+    "hand_same_frame_prob": 0.5,
+    "stand_height": 0.434,
+    "w_lin": 2.0,
+    "var_lin": 0.05,
+    "w_yaw": 2.0,
+    "var_yaw": 0.25,
+    "w_height": 1.0,
+    "var_height": 0.0025000000000000005,
+    "w_torso": 1.0,
+    "var_torso": 0.04000000000000001,
+    "w_hand": 0.75,
+    "var_hand": 0.010000000000000002,
+    "masked_weight": 0.3,
+    "w_action_rate": -0.3,
+    "w_joint_limit": -2.0,
+    "w_rp_rate": -0.05,
+    "w_hip_yaw": -4.0,
+    "hip_yaw_deadband": 0.1,
+    "w_feet_width": -5.0,
+    "feet_width_min": 0.14
+  },
+  "resume": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_193726/logs/stage1_ref/ckpt_0044000.pt"
+}

@@ -1,0 +1,9 @@
+{
+  "iteration": 48400,
+  "num_updates": 19264,
+  "tele_updates": 1744,
+  "finite_tensors": 295,
+  "acceptance": false,
+  "source": "frozen release ZIP",
+  "device": "cpu"
+}

@@ -1,0 +1,21 @@
+test_actual_state_fresh_observation_and_mapping (test_continuous.Contracts.test_actual_state_fresh_observation_and_mapping) ... ok
+test_bad_cycle (test_continuous.Contracts.test_bad_cycle) ... ok
+test_clock_rollback_faults (test_continuous.Contracts.test_clock_rollback_faults) ... ok
+test_disarmed_hardware_no_side_effect (test_continuous.Contracts.test_disarmed_hardware_no_side_effect) ... ok
+test_future_window_across_seam (test_continuous.Contracts.test_future_window_across_seam) ... ok
+test_late_no_burst (test_continuous.Contracts.test_late_no_burst) ... ok
+test_nonseam_native_goal_parity (test_continuous.Contracts.test_nonseam_native_goal_parity) ... ok
+test_onnx_same_input (test_continuous.Contracts.test_onnx_same_input) ... ok
+test_ownership_timeout_early_and_bad_inference (test_continuous.Contracts.test_ownership_timeout_early_and_bad_inference) ... ok
+test_reference_mismatch_rejected (test_continuous.Contracts.test_reference_mismatch_rejected) ... ok
+test_se2_periods (test_continuous.Contracts.test_se2_periods) ... ok
+test_simulation_preflight_and_ref_reset (test_continuous.Contracts.test_simulation_preflight_and_ref_reset) ... ok
+test_stale_seq_nan_wrong_order_units_future (test_continuous.Contracts.test_stale_seq_nan_wrong_order_units_future) ... ok
+test_stop_no_resume (test_continuous.Contracts.test_stop_no_resume) ... ok
+test_untrusted_initial_and_hardware (test_continuous.Contracts.test_untrusted_initial_and_hardware) ... ok
+test_implementation_available (test_continuous.Implementation.test_implementation_available) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.214s
+
+OK

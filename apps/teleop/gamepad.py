@@ -235,7 +235,7 @@ class GlfwPad:
 
 
 class ScriptPad:
-    """'动作:秒' 逗号分隔。组合键动作（getup = L2+A、liedown = L2+B、damp = BACK、reset = START）
+    """'动作:秒' 逗号分隔。组合键动作（getup = L2+A、dance = L2+X、liedown = L2+B、damp = BACK、reset = START）
     只在段首按一帧，其余是摇杆 / 十字键在整段内保持。脚本放完 ``done`` 为 True。"""
 
     STICKS = {
@@ -243,7 +243,7 @@ class ScriptPad:
         "turn_l": {"rx": 1.0}, "turn_r": {"rx": -1.0}, "fwd_turn_l": {"ly": 1.0, "rx": 0.6},
         "squat": {"DOWN": True}, "rise": {"UP": True}, "faster": {"RIGHT": True}, "slower": {"LEFT": True},
     }
-    COMBOS = {"getup": ("A", ("lt",)), "liedown": ("B", ("lt",)), "damp": ("BACK", ()),
+    COMBOS = {"getup": ("A", ("lt",)), "dance": ("X", ("lt",)), "liedown": ("B", ("lt",)), "damp": ("BACK", ()),
               "reset": ("START", ())}
 
     def __init__(self, script: str, dt: float):

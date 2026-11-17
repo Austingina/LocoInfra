@@ -1,4 +1,5 @@
-"""Q1 手柄遥操作：启动时趴在平地上，L2+A 起身，之后基础模型 E_tele 跟手柄的 vx、vy、yaw、高度，L2+B 站直再趴下。
+"""Q1 手柄遥操作：启动时趴在平地上，L2+A 起身，之后基础模型 E_tele 跟手柄的 vx、vy、yaw、高度；
+L2+X 停稳后播放舞蹈，舞蹈结束自动回到站立；L2+B 站直再趴下。
 
 起身 / 趴下用单独训练的技能策略（export_package.py 导出的单段动作包，默认发布的 weights/getup_vpd_ft）跟踪参考库
 apps/ref/skills/ 里的 getup_facedown / liedown_facedown；自己训练见 docs/apps.md#52-起身--趴下技能。
@@ -9,10 +10,10 @@ apps/ref/skills/ 里的 getup_facedown / liedown_facedown；自己训练见 docs
     infra/bin/q1py -m apps.teleop --backend real --speed-scale 0.5
 仿真（Mac 上 GLFW 读手柄、开窗口；无手柄用 --script 自测）：
     infra/bin/q1py -m apps.teleop
-    infra/bin/q1py -m apps.teleop --script 'idle:1,getup:12,fwd:3,turn_l:2,squat:1,rise:1,liedown:14'
+    infra/bin/q1py -m apps.teleop --script 'idle:1,getup:12,fwd:3,idle:2,dance:23,liedown:14'
 
 手柄（Xbox 布局）：
-    L2 + A  起身（趴着 / 阻尼时）         L2 + B  站直后趴下（行走时）        BACK  急停切阻尼
+    L2 + A  起身（趴着 / 阻尼时）         L2 + X  停稳后跳舞                   L2 + B  站直后趴下
     左摇杆  前后 vx / 左右 vy             右摇杆左右  yaw                     十字键 ↑ / ↓  起身 / 下蹲，Y 高度回正
     十字键 ← / →  速度系数 −/+ 0.1（0.2 ~ 1.5，语音播报）                     START   仿真里重置
 
@@ -42,6 +43,7 @@ from runtime import MuJoCoBackend, Package  # noqa: E402
 
 DEFAULT_BASE = PROJECT / "weights" / "dual_v3b"
 DEFAULT_SKILL = PROJECT / "weights" / "getup_vpd_ft"
+DEFAULT_DANCE = PROJECT / "weights" / "q1_smooth_dance"
 REC_REAL = Path("/robot/persist/log/kabutack_teleop/rec")
 REC_SIM = PROJECT / "infra" / "jobs" / "teleop_rec"
 DRY_TOPIC = "/kabutack/dry_run/joint/command"
@@ -141,7 +143,7 @@ def run_window(tele: Teleop) -> None:
         mujoco.mjr_overlay(mujoco.mjtFont.mjFONT_BIG, mujoco.mjtGridPos.mjGRID_TOPLEFT, vp,
                            "\n".join(r[0] for r in rows), "\n".join(r[1] for r in rows), con)
         mujoco.mjr_overlay(mujoco.mjtFont.mjFONT_NORMAL, mujoco.mjtGridPos.mjGRID_BOTTOMLEFT, vp,
-                           "L2+A get up   L2+B lie down   L-stick vx/vy   R-stick yaw   D-pad height   Y height 0   "
+                           "L2+A get up   L2+X dance   L2+B lie down   L-stick vx/vy   R-stick yaw   D-pad height   Y height 0   "
                            "BACK damp   START reset   Esc quit",
                            None, con)
         glfw.swap_buffers(win)
@@ -166,19 +168,51 @@ def load_skill(path: Path | None, real: bool) -> Package | None:
     return None
 
 
+def load_dance(path: Path | None) -> tuple[Package | None, Path | None]:
+    """舞蹈单段策略包；None 表示明确关闭。"""
+    if path is None:
+        return None, None
+    if not (path / "deploy.yaml").exists() or not (path / "motion.npz").exists():
+        sys.exit(f"舞蹈技能包不完整：{path}（需要 deploy.yaml、policy.onnx、motion.npz）")
+    return Package.load(path), path / "motion.npz"
+
+
+def load_storage_skill(path: Path | None, motion: Path | None, label: str, arg: str) -> tuple[Package | None, Path | None]:
+    """展开 / 折叠单段策略包；缺失时状态机保持安全拒绝。"""
+    if path is None:
+        if motion is not None:
+            sys.exit(f"--{arg}-ref 必须与 --{arg}-skill 一起使用")
+        return None, None
+    ref_path = motion or path / "motion.npz"
+    if not (path / "deploy.yaml").exists() or not (path / "policy.onnx").exists() or not ref_path.exists():
+        sys.exit(f"{label}技能包不完整：{path}（需要 deploy.yaml、policy.onnx 和 {ref_path}）")
+    return Package.load(path), ref_path
+
+
 def main() -> None:
-    p = argparse.ArgumentParser(description="Q1 手柄遥操作（起身 → E_tele 行走 → 趴下）")
+    p = argparse.ArgumentParser(description="Q1 手柄遥操作（起身 → E_tele 行走 ↔ 舞蹈 → 趴下）")
     p.add_argument("--backend", choices=("sim", "real"), default="sim")
     p.add_argument("--package", type=Path, default=DEFAULT_BASE, help="基础模型权重包（export_base_package.py）")
     p.add_argument("--skill", type=Path, default=None,
                    help=f"起身 / 趴下技能包（export_package.py），默认 {DEFAULT_SKILL.relative_to(PROJECT)}；不存在时仿真只能行走")
     p.add_argument("--getup-ref", default="getup_facedown", help="参考库里的起身参考（名字或 motion.npz 路径）")
     p.add_argument("--liedown-ref", default="liedown_facedown", help="参考库里的趴下参考")
+    p.add_argument("--unfold-skill", type=Path, default=None,
+                   help="UNFOLD：深度折叠→平趴的单段策略包")
+    p.add_argument("--unfold-ref", type=Path, default=None,
+                   help="UNFOLD 参考 motion.npz；缺省使用 <unfold-skill>/motion.npz")
+    p.add_argument("--fold-skill", type=Path, default=None,
+                   help="FOLD：平趴→深度折叠的单段策略包")
+    p.add_argument("--fold-ref", type=Path, default=None,
+                   help="FOLD 参考 motion.npz；缺省使用 <fold-skill>/motion.npz")
+    p.add_argument("--dance", type=Path, default=DEFAULT_DANCE,
+                   help=f"舞蹈单段策略包，默认 {DEFAULT_DANCE.relative_to(PROJECT)}")
+    p.add_argument("--no-dance", action="store_true", help="不加载舞蹈技能")
     p.add_argument("--speed-scale", type=float, default=1.0, help="满速缩放（真机初次联调建议 0.5）")
     p.add_argument("--pad", choices=("auto", "evdev", "joydev", "glfw"), default="auto",
                    help="auto：有 /dev/input/by-id/*event-joystick 用 evdev，其次 /dev/input/js* 用 joydev，否则 GLFW")
     p.add_argument("--pad-device", default=None, help="手柄设备，如 /dev/input/event0 或 /dev/input/js0")
-    p.add_argument("--script", default=None, help="仿真无界面自测，如 'idle:1,getup:12,fwd:3,liedown:14'")
+    p.add_argument("--script", default=None, help="仿真无界面自测，如 'idle:1,getup:12,fwd:3,idle:2,dance:23,liedown:14'")
     p.add_argument("--dry-run", action="store_true", help=f"真机演练：全流程照跑，指令发到 {DRY_TOPIC}，电机收不到")
     p.add_argument("--voice", choices=("auto", "robot", "local", "off"), default="auto",
                    help="阶段语音提示：robot 机器人扬声器（PlayTts），local 本机 say / espeak-ng；auto 真机 robot、仿真窗口 local、--script off")
@@ -188,7 +222,10 @@ def main() -> None:
     p.add_argument("--record", type=Path, nargs="?", const=REC_SIM, default=None,
                    help=f"活动记录目录（每次启动建一个 rec_<时间>/）；真机缺省 {REC_REAL}，仿真缺省不记、只写 --record 则记到 {REC_SIM.relative_to(PROJECT)}")
     p.add_argument("--no-record", action="store_true", help="不记录")
+    p.add_argument("--sim-start-folded", action="store_true", help="仿真从深度折叠姿态开始，验证 UNFOLD→GETUP")
     a = p.parse_args()
+    if a.sim_start_folded and a.backend != "sim":
+        sys.exit("--sim-start-folded 只用于仿真")
     if a.voice == "auto":
         a.voice = "robot" if a.backend == "real" else "off" if a.script else "local"
 
@@ -205,6 +242,9 @@ def main() -> None:
 
     base = Package.load(a.package)
     skill = load_skill(a.skill, a.backend == "real")
+    unfold_skill, unfold_ref = load_storage_skill(a.unfold_skill, a.unfold_ref, "UNFOLD 展开", "unfold")
+    fold_skill, fold_ref = load_storage_skill(a.fold_skill, a.fold_ref, "FOLD 折叠", "fold")
+    dance, dance_ref = load_dance(None if a.no_dance else a.dance)
     getup_ref, liedown_ref = ref.find(a.getup_ref), ref.find(a.liedown_ref)
 
     if a.backend == "real":
@@ -227,13 +267,21 @@ def main() -> None:
         if a.voice == "robot":
             sys.exit("--voice robot 只用于 --backend real")
         voice = open_voice(a.voice)
-    tele = Teleop(base, skill, robot, getup_ref, liedown_ref, speed_scale=a.speed_scale, voice=voice, pad_lost=a.pad_lost)
+    tele = Teleop(base, skill, robot, getup_ref, liedown_ref, speed_scale=a.speed_scale, voice=voice,
+                  pad_lost=a.pad_lost, dance=dance, dance_ref=dance_ref,
+                  unfold_skill=unfold_skill, unfold_ref=unfold_ref,
+                  fold_skill=fold_skill, fold_ref=fold_ref)
+    if a.sim_start_folded:
+        tele.place_folded()
     rec_root = None if a.no_record else a.record or (REC_REAL if a.backend == "real" else None)
     if rec_root is not None:
         from apps.teleop.recorder import Recorder
 
         tele.recorder = Recorder(rec_root, base.joint_names, base.control_dt,
-                                 {"base": a.package, "skill": None if skill is None else skill.root},
+                                 {"base": a.package, "skill": None if skill is None else skill.root,
+                                  "unfold_skill": None if unfold_skill is None else unfold_skill.root,
+                                  "fold_skill": None if fold_skill is None else fold_skill.root,
+                                  "dance": None if dance is None else dance.root},
                                  {k: str(v) if isinstance(v, Path) else v for k, v in vars(a).items()})
 
     why = "正常退出"

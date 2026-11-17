@@ -1,0 +1,183 @@
+{
+  "imports": {
+    "supermimic.scripts.train": "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/scripts/train.py",
+    "supermimic.training.loop": "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/training/loop.py",
+    "supermimic.data.replay_buffer": "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/data/replay_buffer.py"
+  },
+  "code_sha256": {
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/__init__.py": "125f22c257d97507d23ebfb893b5afc51031273f46c9dbbc079800df93064111",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/config.py": "0dafbf45b84ec38b4c377685facafdb6ae5ce935c069179a604ca93b3e569885",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/robot.py": "116c9d7aeb7773853582c17d400afe18643e0b91ed86d4006a6f94943eeb3a24",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/world_model/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/world_model/world_model.py": "a6ce2e00398787d1a32f3219a1dad2f9fbcae0ae9937595a95523e217c15017e",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/world_model/state_spec.py": "76a07a62052d41e4db7e2242e684cc522b58a73a6049dddc957ccfefa1a89f3e",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/world_model/wm_trainer.py": "b395133568b888611a8b9d0cdf216c7493067e5b314bcaa874f28fa20ee21dea",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/world_model/dynamics.py": "cc045edbb4c4cb0df2c37750cdf5359697e1365525c0c3f6b4ed25af167ffb35",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/world_model/heads.py": "bbd45eb5ae68be6ab12d389d17b3e1eb8875ba8d3867154ae0e93d9802abeace",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/scripts/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/scripts/train.py": "8afeeda3739bf2200b9bdf7b148442de19b1a0d07689a475734ae5ef744d72f2",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/tele/__init__.py": "060ddbbfcf9a741e9c4d99298a80b82c28183e095af25a348ba4e685381fbf3a",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/tele/labels.py": "3abfb360da2de4b1ef842245e032548ab813872e507a51cf84824089ab2a763a",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/tele/slots.py": "aaf3ed7721af60d4db2d4c5de500d46c603efb9fe968357fa9219b9fedc25308",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/tele/interface.py": "3916c5ff4cfe472e16d2c9ae5597aef2162472faed0a20fe09207cabcf5af29d",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/policy/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/policy/nets.py": "cb5133c8924ac2edf3bd34d880e5681fd5ff3ba720af22bbb19edb3d807e2605",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/eval/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/eval/suite.py": "635d6b91d852f44c726b36f7a74282242bd18bc80e34acc382e793ba71ab1ada",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/eval/report.py": "62969e7d49099ae09e3ab2f22e57f1ae44b8991f9270932f0595c1fc776e272e",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/eval/benchmark.py": "a0a17e29c8c735546d7f69f7b60fc690410350af2f6108ab7753e80ef57d62c5",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/data/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/data/recorder.py": "37f8e63747da0b2faf0333003da4ddad063519107e7020404837eb2b977ae597",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/data/motion_convert.py": "3e23495d11fae8218ff9793f7af8cadbbdd3a8364efa0e98ec1e4f48abe9aeb8",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/data/replay_buffer.py": "87c1924ec4659d1a0033cb55da32c20f63ff1b25444a64a16891e81f61cfaf9c",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/kinematics/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/kinematics/g1_fk.py": "4635eea9db60cc1f0541a1ed480986392984dbf8e83802775bb3d53665a91657",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/kinematics/rotations.py": "e4120edd12b5fdf97a1927a6d4a14b392d2d2736308bb473f6ffa89219aa0c47",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/imagination/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/imagination/rollout.py": "ed1e6b26491a7f51df7320acf3697f642f603c3ab61e890fd0181b8afa6958c0",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/imagination/compiled.py": "8e3c6a1d03f375ff50740455b08151a69f1daa3136607fe47cdb99273f63d5c1",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/imagination/policy_trainer.py": "7a05b17559d64c3bf6fdd00c4ec153cda266c1fb4eeb813fcda545520873c910",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/imagination/objective.py": "3c93ec24c0f26db7bd4d60c5da50bc4a4d711a70a72ba0c9dfc7b078f082f774",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/envs/__init__.py": "1489391ed86aefc970651989774178018a94a020830b711b2bbb9e3ac94c715d",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/envs/dr.py": "24eee5ea747c770f691c34733da92e16e2a0d99ab9e2e62e22cfb94f9b89f383",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/envs/actions.py": "29820a2d8239fcb6540e259c26026977c8288f66537173570d39bd38782b5420",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/envs/tracking_env_cfg.py": "47835ee89fe674aab14dcb180b8ee2e43db000bb7b27bf55440db964268d4e27",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/envs/sim_context.py": "537b4d2be72d146ebbbdcaf6e188cfcbf1a48bbfd6d7f2bf2fb0dab6f1d139d2",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/envs/state_io.py": "b0038eddbc31491991ee9c638a0d9f20bde839dc8a41495c73a66707169de710",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/training/distributed.py": "ebf2d6d37ce6102f55941c0ab328c9deb4021964c46f7bd35a8bc1bb767f5a21",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/training/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/training/loop.py": "4262544ac3da5fe1f2c1adbed6f41cb1024db9e9aa13841db43ab4e4af1be1ae",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/training/schedule.py": "3848bc4432d6f87bc81d93660dff0cbe7491122f4f0413c42808be27cef6c2ee",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/robots/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/robots/q1.py": "f8cdccbdbbbbcf511c918ebef702f7ce068bae2bdb95667ca9c098c640d3de3f",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/envs/mdp/observations.py": "7783bc1715269b4c011a2492557716e2ed59a7de7869452a64d748c6e1e94cea",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/envs/mdp/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/envs/mdp/rewards.py": "f7e055c3955ece19a26b663a32723ef9dbb046785f0ceadd62fbf076c1fceb48",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/envs/mdp/terminations.py": "fbe823ea458f2be13b730a474a0ca1d66875fca13af090b012231afc14c963ec",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/envs/mdp/env_rewards.py": "5502978ffa0e7e4fdd3a0ce85129e99c8667f98d067a48ded5d564134cac821f",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/envs/mdp/motion_library.py": "a9fede7679f885bc9dc88c1e7f6c8b930d9571891f61a1809bc0470db0b757e9",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/envs/mdp/contact.py": "4a6d05fee6bdbe3a3c76b523cb93e96663a6056a04c768b232eb09dd7cdffe8c",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/src/supermimic/envs/mdp/commands.py": "dc4bf5d5dcbfa53a046caefda20be7c404bfe292e4340e2d2722aff65a118127",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/scripts/train/base_ref.sh": "27264e3b976a1c1eb489e68bc8f2b7cda6131e3693317255e0d3233dbd60537f",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/scripts/train/base_dual.sh": "6f67cd106823371359ee14e6d79c95e56eb9ade0f46a0b1fe5b5a8e0b299a95b",
+    "/home/cityur/Gina/LocoInfra/infra/SuperMimic-Q1/tests/test_replay_terminal_labels.py": "1e19342ba4347ac2ad1e1670ae0c049896cc497bcfce54c0c7d22f90c2676b3c"
+  },
+  "robot_assets_sha256": {
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/urdf/q1_v3.urdf": "a4e0f017fe77308150c1cc098538418eb6c305d33632edbb355a2b6936d38adc",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/right_shoulder_yaw_link.STL": "b7696cc9d2ffe049896f88123d9daf03424ca35f2c9b204fd6cc11f9cea0d7d9",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/left_hip_roll_link.STL": "fe2255e995cea72657fe8f7e7c62b9e2d3ecf1abeab40f0ad482752ccf2b43ab",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/right_hip_yaw_link.STL": "47e20a1356a758f3f00e8386309170e081efe3d191622915a997921eea29e384",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/right_knee_link.STL": "5729c90f603515b8d4472d369917ffc20c91c7581ae84f4b4389184546febc83",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/right_ankle_roll_link.STL": "072c4b056fee37f778e1c018bf883a98caf49cbb543738275e4d2ccd34635506",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/right_hip_roll_link.STL": "40587318fa6392586f05aa5add7d586b6823f56dcf2733ae091a4d69220c2ce0",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/right_ankle_pitch_link.STL": "a5e04d5ef7c164a9108d5e37ec19e2dfe088b8bcb877312256d019b60f44e0d5",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/left_hip_pitch_link.STL": "5e0d4ec7f6b430537d9a23fd13df2fef95e6d46ced86db6e13d2978a8fb05345",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/right_shoulder_roll_link.STL": "b67b9e4b49c73d1c1ecf4fd106493fed266fbd1ac60d0c0c68b16c5f2f174b03",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/right_hip_pitch_link.STL": "75dc6bc206539cc97e94148f02398030cca116bf1d188cc4edfabccdf64d65c4",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/left_ankle_roll_link.STL": "3a4c01dfa708f45bb925485040bbb2a286fb74ecfce03d5635b2c5701e35ab04",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/left_hip_yaw_link.STL": "5bbf6d4e292d5793f40a531967eb876e57dedda774e3b3bc716dbea89d06985c",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/left_elbow_link.STL": "a56a951f45e4af8fa657be3a0e558ae75300adb2c5fc34695307ba1f9b324314",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/right_elbow_link.STL": "6b27f06854e6256e4ca1d28bd179034913e2dafcebfacef73b8d72658a25d9ac",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/left_shoulder_yaw_link.STL": "447d7f76a2e48fb3118d5eb6eb9a68bd7ce1a4d72ce71ba5c9a313860f79b7cd",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/pelvis.STL": "6aded646308edfd9c139e8638f92d78e62396c2035462c217c5e26a23c6c1b1b",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/head_link.STL": "46e89bdd9cec2ac9832fdb7a7db2c04ac791307a67584a62b14afac8c5c76e68",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/left_shoulder_pitch_link.STL": "1d033e05dcd5c4a300643ab5c35878b97185d9f271f5b8901adbf1c3dfd1df53",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/waist_roll_link.STL": "67b5abf2a19a41d4b668a1e3717ca0534c66b7ddd9089a23fbfa1c9f0e1cf682",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/torso_link.STL": "15a47cf9b24422536015dfd6f170c93f7bbbbaee2be5062390390e45d360b76a",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/right_shoulder_pitch_link.STL": "e94308ba1ea3bf092af87df26ccaaae13dcbef1098ce5829d3bd01f9d17a9095",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/left_shoulder_roll_link.STL": "55dbe108707fb25f6528bf55cf84edba352cb82fc86110e2bcac5bd1183f884c",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/left_knee_link.STL": "29bea4221f7e3ffc973715e4a36cebf40b280517419c0bed9e75ece40b82795e",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/meshes/left_ankle_pitch_link.STL": "51b73d20787d9f9c2139e829e17d1d7befaf67d65c20cd40467f22fc0f3e4e92",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/xml/q1_v3.xml": "f427baa7c37905358ad86499a3df654c7676eec5658c2d3da356863bcde571cc",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/xml/q1_v3_full_range.xml": "3fec41e334fa804a84a0741a16dbf7c3f61b0048c754d21d18891527bfe674a7",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/xml/build_collision.py": "c5677c059d5bff4d7cd5cd230d5c9afe2929d1f07145fc1031b7c9f36e5ed329",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/xml/q1_v3_collision.xml": "43f90ecf5df3ddaaa5124eb95259107914d9ef18255de966adc4edf4a754ac73",
+    "/home/cityur/Gina/LocoInfra/q1/q1_v3/xml/q1_v3_mc.xml": "d9442f0de18071b100d927e310bc58b04e7be305fea8f126893b2700e8c4bd3b"
+  },
+  "git_head": "2bfc9d26216e40622033bda8df2f5cb129e5bc85",
+  "data": [
+    {
+      "name": "straight",
+      "path": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_193726/data/straight.npz",
+      "sha256": "3f5fe5d5543d16a6f540db6aba56e6fdc3b4fcefe4a7302140d7564c3edd77ff",
+      "source": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_181103/data/straight.npz",
+      "frames": 130,
+      "conversion": "Already native convert_qpos_to_npz output; verified, byte-identical copy; no recrop/resample"
+    },
+    {
+      "name": "backward",
+      "path": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_193726/data/backward.npz",
+      "sha256": "1989f9665555e7f14a1fb672a6c561db48120ae573f04e5ff252aae0d7dc207d",
+      "source": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_181103/data/backward.npz",
+      "frames": 149,
+      "conversion": "Already native convert_qpos_to_npz output; verified, byte-identical copy; no recrop/resample"
+    },
+    {
+      "name": "left",
+      "path": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_193726/data/left.npz",
+      "sha256": "68aff31defe59ff365a33d003628355c24fced54a39ce45fc68c3a9932443497",
+      "source": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_181103/data/left.npz",
+      "frames": 149,
+      "conversion": "Already native convert_qpos_to_npz output; verified, byte-identical copy; no recrop/resample"
+    },
+    {
+      "name": "right",
+      "path": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_193726/data/right.npz",
+      "sha256": "af1603746a8736adb69625f5a3e92a707cbc0519aa7f2806ed363e01c116b351",
+      "source": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_181103/data/right.npz",
+      "frames": 149,
+      "conversion": "Already native convert_qpos_to_npz output; verified, byte-identical copy; no recrop/resample"
+    }
+  ],
+  "protected_sha256": {
+    "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_193726/logs/stage1_ref/ckpt_0044000.pt": "c1a8db529fb9ed2987dd8622f8750b5c1f2c2bfe7a9e0beccf642f3e4f3934f2",
+    "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_193726/data/straight.npz": "3f5fe5d5543d16a6f540db6aba56e6fdc3b4fcefe4a7302140d7564c3edd77ff",
+    "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_193726/data/backward.npz": "1989f9665555e7f14a1fb672a6c561db48120ae573f04e5ff252aae0d7dc207d",
+    "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_193726/data/left.npz": "68aff31defe59ff365a33d003628355c24fced54a39ce45fc68c3a9932443497",
+    "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_193726/data/right.npz": "af1603746a8736adb69625f5a3e92a707cbc0519aa7f2806ed363e01c116b351"
+  },
+  "selection": {
+    "user_statement": "\u662f\u7684\uff0c\u8fd9\u4e24\u6bb5\u5408\u9002",
+    "status": "user_visual_approved",
+    "candidates": [
+      {
+        "label": "L1",
+        "id": "walk3_subject4_04050_04140",
+        "native_npz": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/turn_replacement/L1/L1_native.npz",
+        "sha256": "68aff31defe59ff365a33d003628355c24fced54a39ce45fc68c3a9932443497",
+        "visual_approval": "user_approved",
+        "role": "moving_turn_reference"
+      },
+      {
+        "label": "R1",
+        "id": "walk3_subject4_04770_04860",
+        "native_npz": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/turn_replacement/R1/R1_native.npz",
+        "sha256": "af1603746a8736adb69625f5a3e92a707cbc0519aa7f2806ed363e01c116b351",
+        "visual_approval": "user_approved",
+        "role": "moving_turn_reference"
+      }
+    ],
+    "scope": "Selected L1/R1 references for next replacement dataset; keep straight/backward unchanged. No new training authorized by this confirmation alone.",
+    "limitations": [
+      "Kinematic preview approval is not physical policy validation",
+      "Low foot lift and near-ground motion remain noted",
+      "Not stationary turns"
+    ],
+    "original_manifest_sha256": "742b58062d415bd48dc36ac8ce3924b78cf27f7ed9e7a321acef286671cf1414"
+  },
+  "source_checkpoint": {
+    "path": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_193726/logs/stage1_ref/ckpt_0044000.pt",
+    "sha256": "c1a8db529fb9ed2987dd8622f8750b5c1f2c2bfe7a9e0beccf642f3e4f3934f2",
+    "iteration": 44000,
+    "num_updates": 17520
+  },
+  "budget": {
+    "native_max_hours": 0.6666666666666666,
+    "external_seconds": 3000,
+    "total_iterations": 50000,
+    "lr_from_resume": false
+  },
+  "resume_semantics": "Exact native models/three optimizers/counters; byte-identical refs; rebuilt replay/env/RNG; cumulative LR without restart.",
+  "authorization": "Exactly one serial 40-minute native stage1 continuation; no restart/stage2/messaging.",
+  "predecessor": "/home/cityur/Gina/q1-locoinfra-imitation-20261115/native_two_stage/stage1_continue_20261115_181103"
+}

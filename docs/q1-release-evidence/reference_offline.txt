@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "method": "golden same-input ONNX + ideal-reference kinematic input smoke + XML compile; no hardware or physics integration",
+  "clips": {
+    "straight": {
+      "golden_rows": 130,
+      "golden_max_abs": {
+        "action": 3.0994415283203125e-06,
+        "joint_target": 7.748603820800781e-07,
+        "z": 8.046627044677734e-07
+      },
+      "reference_kinematic_smoke_frames": 130,
+      "max_abs_target_rad": 1.332923173904419
+    },
+    "backward": {
+      "golden_rows": 149,
+      "golden_max_abs": {
+        "action": 2.86102294921875e-06,
+        "joint_target": 7.152557373046875e-07,
+        "z": 9.238719940185547e-07
+      },
+      "reference_kinematic_smoke_frames": 149,
+      "max_abs_target_rad": 1.4344971179962158
+    },
+    "left": {
+      "golden_rows": 149,
+      "golden_max_abs": {
+        "action": 2.6226043701171875e-06,
+        "joint_target": 5.960464477539062e-07,
+        "z": 7.450580596923828e-07
+      },
+      "reference_kinematic_smoke_frames": 149,
+      "max_abs_target_rad": 1.3335278034210205
+    },
+    "right": {
+      "golden_rows": 149,
+      "golden_max_abs": {
+        "action": 3.337860107421875e-06,
+        "joint_target": 8.344650268554688e-07,
+        "z": 1.0132789611816406e-06
+      },
+      "reference_kinematic_smoke_frames": 149,
+      "max_abs_target_rad": 1.319593071937561
+    }
+  },
+  "xml_nq": 29,
+  "xml_nv": 28
+}

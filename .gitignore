@@ -1,3 +1,8 @@
+# Q1 release-only binary assets; deploy.yaml and README remain in git.
+weights/dance_4x/*.onnx
+weights/dance_4x/*.npz
+weights/dance_4x/*.mjb
+
 .DS_Store
 __pycache__/
 *.pyc

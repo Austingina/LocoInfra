@@ -31,7 +31,7 @@ from apps.teleop.gamepad import BUTTONS
 
 CHUNK = 500
 KEEP = 30
-MODES = ("LYING", "GETUP", "WALK", "STRAIGHTEN", "LIEDOWN", "DAMPED")
+MODES = ("LYING", "FOLDED", "UNFOLD", "GETUP", "WALK", "STRAIGHTEN", "LIEDOWN", "FOLD", "DANCE", "DAMPED")
 AXES = ("lx", "ly", "rx", "ry", "lt", "rt")
 WRITER_CORES = {0, 1, 2, 3}  # A53 小核；策略进程在大核
 
@@ -155,7 +155,7 @@ class Recorder:
         b["t"][k] = time.time()
         b["t_rel"][k] = time.monotonic() - self.t0
         b["mode"][k] = MODES.index(tele.mode)
-        b["ref_frame"][k] = tele.i if tele.mode in ("GETUP", "LIEDOWN") else -1
+        b["ref_frame"][k] = tele.i if tele.mode in ("FOLDED", "UNFOLD", "GETUP", "LIEDOWN", "FOLD", "DANCE") else -1
         b["pad_connected"][k] = pad.connected
         b["pad_axes"][k] = [getattr(pad, a) for a in AXES]
         b["pad_buttons"][k] = sum(1 << j for j, name in enumerate(BUTTONS) if pad.buttons[name])

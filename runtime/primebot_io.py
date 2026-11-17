@@ -55,13 +55,25 @@ def realtime(core: int | None, prio: int | None) -> str:
     return "，".join(msg)
 
 
-def vendor_mc_running() -> bool:
-    """厂商运控 mc_app_main 在跑（标准模式或没选「低层运控开发」）时，再下发关节指令会和它冲突。"""
-    for pid in os.listdir("/proc"):
+def vendor_mc_running(proc_root: str = "/proc") -> bool:
+    """厂商运控在跑时返回 True。
+
+    Q1 release-v1.2.1.26 的可执行文件是 ``mc_app_main``，但进程会把
+    ``/proc/<pid>/comm`` 改成 ``mc_main``。同时查 comm 和 cmdline，避免漏判后
+    与原厂运控并发下发关节命令。``proc_root`` 仅用于测试。
+    """
+    for pid in os.listdir(proc_root):
+        if not pid.isdigit():
+            continue
         try:
-            with open(f"/proc/{pid}/comm") as f:
-                if f.read().strip() == "mc_app_main":
+            base = os.path.join(proc_root, pid)
+            with open(os.path.join(base, "comm")) as f:
+                if f.read().strip() in {"mc_app_main", "mc_main"}:
                     return True
+            with open(os.path.join(base, "cmdline"), "rb") as f:
+                argv = [x.decode(errors="ignore") for x in f.read().split(b"\0") if x]
+            if any(os.path.basename(arg) == "mc_app_main" for arg in argv):
+                return True
         except (OSError, ValueError):
             continue
     return False
