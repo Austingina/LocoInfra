@@ -1,0 +1,42 @@
+#!/bin/bash
+# 线路 B 机器人本机服务入口。由 robot_service.py 安装的 user systemd unit 调用。
+# 本脚本不会自行循环重启，避免真机控制器故障后在无人确认时重新接管。
+
+# Q1 官方 basic_env.sh 会在初次加载时追加尚未定义的 ROS 环境变量。
+# 先在不开 nounset 的情况下完成官方环境初始化，之后再恢复严格模式。
+set -eo pipefail
+
+: "${LINE_B_PROJECT:?缺少 LINE_B_PROJECT}"
+: "${LINE_B_TOKEN:?缺少 LINE_B_TOKEN}"
+
+export HOME="$(getent passwd "$(id -un)" | cut -d: -f6)"
+export ROS_LOG_DIR="${LINE_B_LOG_DIR:-/tmp/q1-line-b-web/ros}"
+mkdir -p "$ROS_LOG_DIR"
+
+source /robot/etc/basic_env >/dev/null 2>&1 || true
+source /opt/ros/humble/setup.bash
+source /robot/software/interface/local_setup.bash
+set -u
+
+cd "$LINE_B_PROJECT"
+export PYTHONPATH="$LINE_B_PROJECT/.python${PYTHONPATH:+:$PYTHONPATH}"
+
+# 所有真机低层网页共用同一个跨进程锁。不自动停掉另一个控制器，
+# 因为站立时被动停服务会立即切阻尼。锁被占用时直接拒绝启动。
+exec 9>/tmp/q1-lowlevel-web-controller.lock
+if ! flock -n 9; then
+    echo "[line-b] 另一个真机低层网页已持有控制权，拒绝并发启动" >&2
+    exit 73
+fi
+
+exec python3 -u -m apps.line_b_web \
+    --backend real \
+    --enable-real \
+    --enable-manual-drive \
+    --enable-dance \
+    --host 0.0.0.0 \
+    --port "${LINE_B_PORT:-8768}" \
+    --token "$LINE_B_TOKEN" \
+    --max-forward 0.30 \
+    --max-backward 0.20 \
+    --max-turn 0.50

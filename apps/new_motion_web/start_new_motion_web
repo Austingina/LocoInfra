@@ -1,0 +1,138 @@
+#!/bin/bash
+# Q1 4 倍速舞蹈 + 走路网页（8769）一键安全切换与常驻启动。
+set -Eeuo pipefail
+
+PROJECT=/home/run/LocoInfra_Q1_Dance
+RELEASE=/home/run/q1_4x_packages/current
+REPORT="$PROJECT/apps/new_motion_web/q1_4x_lineb_dynamic_report.json"
+LOWLEVEL_CHECK=/home/run/q1_lowlevel_check.py
+NEW_SERVICE=q1-new-motion-web.service
+OLD_SERVICE=q1-line-b-web.service
+CONFIRMATION=我已确认4倍速舞蹈网页人工安全条件
+WLAN_IF=wlan0
+MODE=start
+
+case "${1:-}" in
+    "") ;;
+    --check) MODE=check ;;
+    --url) MODE=url ;;
+    *)
+        echo "用法：$0 [--check|--url]" >&2
+        exit 2
+        ;;
+esac
+
+require_wlan() {
+    local cidr route
+    cidr="$(ip -4 -o addr show dev "$WLAN_IF" 2>/dev/null | awk 'NR==1 {print $4}')"
+    if [[ -z "$cidr" ]]; then
+        echo "拒绝启动：$WLAN_IF 没有 IPv4 地址；请先让机器人连接手机所在 Wi-Fi。" >&2
+        exit 6
+    fi
+    WLAN_IP="${cidr%/*}"
+    route="$(ip -4 route get 1.1.1.1 2>/dev/null || true)"
+    if [[ "$route" != *" dev $WLAN_IF "* ]]; then
+        echo "拒绝启动：默认 IPv4 路由未走 $WLAN_IF：$route" >&2
+        exit 6
+    fi
+    echo "[network] $WLAN_IF=$WLAN_IP；默认路由已确认走 Wi-Fi。"
+}
+
+show_wlan_url() {
+    local token
+    token="$(sed -n 's/^NEW_MOTION_TOKEN=//p' /home/run/.config/q1-new-motion-web/environment 2>/dev/null | tr -d '\"')"
+    if [[ -n "$token" ]]; then
+        echo "[phone] http://$WLAN_IP:8769/?token=$token"
+    else
+        echo "[phone] 服务尚未安装固定令牌。" >&2
+    fi
+}
+
+if [[ "$(id -un)" != "run" ]]; then
+    echo "拒绝运行：请使用机器人 run 用户，不要使用 root。" >&2
+    exit 2
+fi
+
+if [[ ! -d "$PROJECT" ]]; then
+    echo "缺少项目目录：$PROJECT" >&2
+    exit 2
+fi
+
+cd "$PROJECT"
+require_wlan
+
+if [[ "$MODE" == "url" ]]; then
+    show_wlan_url
+    exec python3 -m apps.new_motion_web.robot_service url
+fi
+
+if systemctl --user is-active --quiet "$NEW_SERVICE"; then
+    echo "新舞蹈走路网页已在机器人本机运行，未执行任何动作或服务切换。"
+    show_wlan_url
+    exec python3 -m apps.new_motion_web.robot_service url
+fi
+
+if [[ "$MODE" == "check" ]]; then
+    echo "[1/3] 校验锁定部署包、策略哈希和 MuJoCo 报告……"
+    python3 -B -c 'import sys; from pathlib import Path; from apps.new_motion_web.gate import validate_real_gate; validate_real_gate(Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3])); print("[OK] 4×部署包和动态报告匹配")' \
+        "$RELEASE" "$REPORT" "$PROJECT/apps/line_b_web/machine.py"
+    echo "[2/3] 运行低层只读检查（不会发布命令）……"
+    "$LOWLEVEL_CHECK"
+    echo "[3/3] 前置检查通过；没有启动网页控制器，也没有发送动作。"
+    show_wlan_url
+    exit 0
+fi
+
+if [[ ! -t 0 ]]; then
+    echo "拒绝非交互启动：必须由现场人员在机器人终端完成安全确认。" >&2
+    exit 3
+fi
+
+cat <<'EOF'
+
+启动前请现场确认全部条件：
+  1. 机器人已拔掉充电线；
+  2. 已切换为低层模式；
+  3. 已人工摆到标准平趴；
+  4. 吊带或稳定支撑已就位；
+  5. 独立硬件急停可用；
+  6. 行走场地无人员和障碍物。
+
+脚本会停止原线路 B；只有原线路 B 处于 LYING/DAMPED 时才能继续。
+EOF
+
+read -r -p "全部确认后输入“$CONFIRMATION”：" answer
+if [[ "$answer" != "$CONFIRMATION" ]]; then
+    echo "人工安全条件未确认，未启动服务。" >&2
+    exit 4
+fi
+
+if [[ ! -x "$LOWLEVEL_CHECK" ]]; then
+    echo "缺少可执行的低层只读检查：$LOWLEVEL_CHECK" >&2
+    exit 5
+fi
+
+echo "[1/5] 安全停止原线路 B（非 LYING/DAMPED 会拒绝）……"
+python3 -m apps.line_b_web.robot_service stop
+
+echo "[2/5] 确认旧控制器已释放后，运行低层只读检查……"
+"$LOWLEVEL_CHECK"
+
+echo "[3/5] 将开机常驻切换到 8769 新网页……"
+systemctl --user disable "$OLD_SERVICE"
+python3 -m apps.new_motion_web.robot_service install \
+    --project "$PROJECT" \
+    --release "$RELEASE" \
+    --dynamic-report "$REPORT" \
+    --port 8769 \
+    --enable-at-boot
+
+echo "[4/5] 启动机器人本机服务……"
+python3 -m apps.new_motion_web.robot_service start \
+    --confirm-not-charging \
+    --confirm-low-level \
+    --confirm-protected
+
+echo "[5/5] 启动完成。终端可以关闭，systemd user service 会继续常驻。"
+show_wlan_url
+echo "手机与机器人位于同一个 Wi-Fi 时，使用上方 wlan0 地址。"

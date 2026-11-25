@@ -1,0 +1,41 @@
+#!/bin/bash
+# 独立 BIGBANG + 连续行走真机服务入口。
+set -eo pipefail
+
+: "${NEW_MOTION_PROJECT:?缺少 NEW_MOTION_PROJECT}"
+: "${NEW_MOTION_TOKEN:?缺少 NEW_MOTION_TOKEN}"
+: "${NEW_MOTION_RELEASE:?缺少 NEW_MOTION_RELEASE}"
+: "${NEW_MOTION_DYNAMIC_REPORT:?缺少 NEW_MOTION_DYNAMIC_REPORT}"
+
+export HOME="$(getent passwd "$(id -un)" | cut -d: -f6)"
+export ROS_LOG_DIR="${NEW_MOTION_LOG_DIR:-/tmp/q1-new-motion-web/ros}"
+mkdir -p "$ROS_LOG_DIR"
+
+source /robot/etc/basic_env >/dev/null 2>&1 || true
+source /opt/ros/humble/setup.bash
+source /robot/software/interface/local_setup.bash
+set -u
+
+cd "$NEW_MOTION_PROJECT"
+export PYTHONPATH="$NEW_MOTION_PROJECT/.python${PYTHONPATH:+:$PYTHONPATH}"
+
+exec 9>/tmp/q1-lowlevel-web-controller.lock
+if ! flock -n 9; then
+    echo "[new-motion] 原线路 B 或另一个低层服务已持有控制权，拒绝并发启动" >&2
+    exit 73
+fi
+
+extra=()
+if [[ "${NEW_MOTION_DRY_RUN:-0}" == "1" ]]; then
+    extra+=(--dry-run)
+fi
+
+exec python3 -u -m apps.new_motion_web \
+    --backend real \
+    --enable-real \
+    --release "$NEW_MOTION_RELEASE" \
+    --dynamic-report "$NEW_MOTION_DYNAMIC_REPORT" \
+    --host 0.0.0.0 \
+    --port "${NEW_MOTION_PORT:-8769}" \
+    --token "$NEW_MOTION_TOKEN" \
+    "${extra[@]}"

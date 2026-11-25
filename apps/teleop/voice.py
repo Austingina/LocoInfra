@@ -14,6 +14,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import threading
 
 TTS_SERVICE = "/aimdk_5Fmsgs/srv/PlayTts"
 TTS_DOMAIN = "kabutack_teleop"
@@ -137,3 +138,42 @@ class RobotVoice(Silent):
 
 def open_voice(kind: str) -> Silent:
     return {"robot": RobotVoice, "local": LocalVoice, "off": Silent}[kind]()
+
+
+class SwitchableVoice(Silent):
+    """运行时可开关的语音提示。
+
+    默认关闭时不启动 TTS 子进程；开启操作由控制主循环执行，
+    避免 HTTP 线程直接创建 ROS 2 进程。
+    """
+
+    def __init__(self, kind: str, enabled: bool = False):
+        if kind not in ("robot", "local"):
+            raise ValueError("可切换语音只支持 robot / local")
+        self.kind = kind
+        self.enabled = False
+        self._voice: Silent = Silent()
+        self._lock = threading.Lock()
+        if enabled:
+            self.set_enabled(True)
+
+    def set_enabled(self, enabled: bool) -> None:
+        enabled = bool(enabled)
+        with self._lock:
+            if enabled == self.enabled:
+                return
+            if enabled:
+                self._voice = open_voice(self.kind)
+                self.enabled = True
+            else:
+                old, self._voice = self._voice, Silent()
+                self.enabled = False
+                old.close()
+
+    def say(self, text: str) -> None:
+        with self._lock:
+            voice = self._voice
+        voice.say(text)
+
+    def close(self) -> None:
+        self.set_enabled(False)

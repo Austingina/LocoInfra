@@ -4,10 +4,21 @@ weights/dance_4x/*.npz
 weights/dance_4x/*.mjb
 
 .DS_Store
+._*
 __pycache__/
 *.pyc
+*.pyo
+*.log
+*.pre-*
 .ruff_cache/
 .pytest_cache/
+
+# 机器人本机运行环境、Codex 部署缓存和可回滚备份
+.python/
+.venv/
+.codex_tmp/
+.codex_backups/
+.codex_update*/
 
 # 环境与外部依赖（infra/setup.sh 重建）
 infra/.venv
@@ -28,6 +39,9 @@ infra/SuperMimic-Q1/logs/
 q1/motor_id/data/*
 !q1/motor_id/data/.gitignore
 !q1/motor_id/data/synth_passive.npz
+
+# 真机起身/交接录制数据仅保留在机器人持久存储，不发布到代码仓库
+q1/getup/data/
 
 # 宣传视频的脚本与成片（只留在本地）
 promo/

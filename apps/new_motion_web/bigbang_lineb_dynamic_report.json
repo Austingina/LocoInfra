@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "candidate": "bigbang_line_b_transition",
+  "backend": "mujoco",
+  "real_robot_enabled": false,
+  "motor_commands_sent": false,
+  "passed": true,
+  "seen_dance": true,
+  "returned_to_walk": true,
+  "final_mode": "WALK",
+  "message": "舞蹈完成，已回到站立；线路 B：圆形摇杆连续前后/转向；可跳舞、正常停止或趴下",
+  "metrics": {
+    "min_upright": 0.92825,
+    "max_gyro_rad_s": 1.251345,
+    "max_tracking_error_rad": 0.309514,
+    "max_target_step_rad": 0.084375,
+    "max_dance_target_step_rad": 0.05,
+    "frames": 6304,
+    "duration_s": 126.08
+  },
+  "source_hashes": {
+    "line_b_machine.py": "e955d8f071f062cb1e3f17ec2a9f46907bc60fb5adecd3d9665ee0d7ded620fe",
+    "bigbang_deploy.yaml": "f275e3b20a1eb85b78c9875ded9a4263aa87ec2f69b5e98ee57b59cd0901a756",
+    "bigbang_policy.onnx": "1f8d0637bea3bed3056f43e6503e5a3268bd2de9d38a25a759e28edc0aa83100",
+    "bigbang_motion.npz": "f0a86211ca5ba2aa52b8f70d3662871413f6fdffff3e35361f741be3b4d9f086"
+  }
+}

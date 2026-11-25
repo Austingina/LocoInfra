@@ -118,7 +118,10 @@ infra/bin/q1py -m runtime.selfcheck --package infra/jobs/base_dual/artifact_base
 infra/bin/q1py -m apps.track_web --package weights/dual_v3b     # 视频 / 动作文件 → http://localhost:8765
 infra/bin/q1py -m apps.text2motion --package weights/dual_v3b   # 一句话 → http://localhost:8766
 infra/bin/q1py -m apps.teleop                                   # 手柄遥操作（仿真：L2+A 起身、摇杆行走、L2+B 趴下）
+infra/bin/q1py -m apps.dance_web --sim-start-standing           # 本分支：手机网页切换 Q1 行走 / 舞蹈（先仿真）
 ```
+
+本分支的 Q1 行走 / 舞蹈统一控制说明见 [`docs/q1_dance_web.md`](docs/q1_dance_web.md)。
 
 ## 文档
 

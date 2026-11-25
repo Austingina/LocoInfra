@@ -17,12 +17,14 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import os
 import queue
 import shutil
 import threading
 import time
+import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -31,7 +33,8 @@ from apps.teleop.gamepad import BUTTONS
 
 CHUNK = 500
 KEEP = 30
-MODES = ("LYING", "FOLDED", "UNFOLD", "GETUP", "WALK", "STRAIGHTEN", "LIEDOWN", "FOLD", "DANCE", "DAMPED")
+MODES = ("LYING", "FOLDED", "UNFOLD", "GETUP", "STAND_HOLD", "WALK_HANDOFF", "WALK_SETTLE",
+         "WALK", "STRAIGHTEN", "LIEDOWN", "FOLD", "DANCE", "DAMPED")
 AXES = ("lx", "ly", "rx", "ry", "lt", "rt")
 WRITER_CORES = {0, 1, 2, 3}  # A53 小核；策略进程在大核
 
@@ -98,6 +101,7 @@ class Recorder:
         }
         (self.dir / "meta.json").write_text(json.dumps(meta, indent=1, ensure_ascii=False))
         self._q: queue.Queue = queue.Queue()
+        self._lock = threading.Lock()
         self._events = open(self.dir / "events.jsonl", "a", buffering=1, encoding="utf-8")
         self._thread = threading.Thread(target=self._writer, name="teleop-recorder", daemon=True)
         self._thread.start()
@@ -106,6 +110,7 @@ class Recorder:
         self.prev: tuple | None = None
         self.prev_pad: bool | None = None
         self.prev_speed: float | None = None
+        self.total_steps = 0
         print(f"[teleop] 记录到 {self.dir}", flush=True)
 
     def _new_chunk(self) -> None:
@@ -120,11 +125,13 @@ class Recorder:
                 return
             kind, payload = item
             try:
-                if kind == "chunk":
+                if kind == "barrier":
+                    payload.set()
+                elif kind == "chunk":
                     path, data = payload
                     tmp = path.with_name(path.name + ".tmp")
                     with open(tmp, "wb") as f:
-                        np.savez(f, **data)
+                        np.savez_compressed(f, **data)
                     tmp.rename(path)
                 else:
                     self._events.write(payload + "\n")
@@ -137,39 +144,41 @@ class Recorder:
 
     def step(self, tele, pad, edges: set[str]) -> None:
         """每个控制周期 tick 之后调一次。"""
-        state = (tele.mode, tele.msg)
-        if state != self.prev:
-            self.event("state", mode=tele.mode, msg=tele.msg)
-            self.prev = state
-        if edges:
-            self.event("buttons", down=sorted(edges), l2=pad.l2, r2=pad.r2, mode=tele.mode)
-        if pad.connected != self.prev_pad:
-            self.event("pad", connected=pad.connected)
-            self.prev_pad = pad.connected
-        if tele.speed != self.prev_speed:
-            self.event("speed", speed=tele.speed)
-            self.prev_speed = tele.speed
+        with self._lock:
+            state = (tele.mode, tele.msg)
+            if state != self.prev:
+                self.event("state", mode=tele.mode, msg=tele.msg)
+                self.prev = state
+            if edges:
+                self.event("buttons", down=sorted(edges), l2=pad.l2, r2=pad.r2, mode=tele.mode)
+            if pad.connected != self.prev_pad:
+                self.event("pad", connected=pad.connected)
+                self.prev_pad = pad.connected
+            if tele.speed != self.prev_speed:
+                self.event("speed", speed=tele.speed)
+                self.prev_speed = tele.speed
 
-        s = tele.robot.sense()
-        b, k = self.buf, self.n
-        b["t"][k] = time.time()
-        b["t_rel"][k] = time.monotonic() - self.t0
-        b["mode"][k] = MODES.index(tele.mode)
-        b["ref_frame"][k] = tele.i if tele.mode in ("FOLDED", "UNFOLD", "GETUP", "LIEDOWN", "FOLD", "DANCE") else -1
-        b["pad_connected"][k] = pad.connected
-        b["pad_axes"][k] = [getattr(pad, a) for a in AXES]
-        b["pad_buttons"][k] = sum(1 << j for j, name in enumerate(BUTTONS) if pad.buttons[name])
-        b["cmd"][k] = tele.cmd
-        b["speed"][k] = tele.speed
-        b["joint_pos"][k] = s.joint_pos
-        b["joint_vel"][k] = s.joint_vel
-        b["joint_target"][k] = np.nan if tele.target is None else tele.target
-        b["kp"][k] = np.nan if tele.kp is None else tele.kp
-        b["base_ang_vel"][k] = s.base_ang_vel
-        b["projected_gravity"][k] = s.projected_gravity
-        self.n += 1
-        if self.n == CHUNK:
-            self._flush()
+            s = tele.robot.sense()
+            b, k = self.buf, self.n
+            b["t"][k] = time.time()
+            b["t_rel"][k] = time.monotonic() - self.t0
+            b["mode"][k] = MODES.index(tele.mode)
+            b["ref_frame"][k] = tele.i if tele.mode in ("FOLDED", "UNFOLD", "GETUP", "LIEDOWN", "FOLD", "DANCE") else -1
+            b["pad_connected"][k] = pad.connected
+            b["pad_axes"][k] = [getattr(pad, a) for a in AXES]
+            b["pad_buttons"][k] = sum(1 << j for j, name in enumerate(BUTTONS) if pad.buttons[name])
+            b["cmd"][k] = tele.cmd
+            b["speed"][k] = tele.speed
+            b["joint_pos"][k] = s.joint_pos
+            b["joint_vel"][k] = s.joint_vel
+            b["joint_target"][k] = np.nan if tele.target is None else tele.target
+            b["kp"][k] = np.nan if tele.kp is None else tele.kp
+            b["base_ang_vel"][k] = s.base_ang_vel
+            b["projected_gravity"][k] = s.projected_gravity
+            self.n += 1
+            self.total_steps += 1
+            if self.n == CHUNK:
+                self._flush()
 
     def _flush(self) -> None:
         if self.n == 0:
@@ -180,11 +189,45 @@ class Recorder:
         self._new_chunk()
 
     def close(self, why: str = "") -> None:
-        self._flush()
+        with self._lock:
+            self._flush()
         self.event("end", why=why)
         self._q.put(None)
         self._thread.join(timeout=5.0)
         self._events.close()
+
+    def web_status(self) -> dict:
+        return {
+            "enabled": True,
+            "session": self.dir.name,
+            "start": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time() - (time.monotonic() - self.t0))),
+            "duration_s": round(max(0.0, time.monotonic() - self.t0), 1),
+            "frames": int(self.total_steps),
+            "control_hz": round(1.0 / float(json.loads((self.dir / "meta.json").read_text())["control_dt"]), 1),
+        }
+
+    def web_download(self) -> tuple[str, bytes]:
+        """导出当前运行记录；已完成块来自磁盘，未满 10 s 的尾块作为 live 快照。"""
+        with self._lock:
+            live = {k: v[: self.n].copy() for k, v in self.buf.items()} if self.n else None
+        barrier = threading.Event()
+        self._q.put(("barrier", barrier))
+        if not barrier.wait(5.0):
+            raise RuntimeError("等待记录写盘超时")
+        output = io.BytesIO()
+        with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+            for path in sorted(self.dir.iterdir()):
+                if path.is_file():
+                    archive.write(path, arcname=f"{self.dir.name}/{path.name}")
+            if live is not None:
+                tail = io.BytesIO()
+                np.savez_compressed(tail, **live)
+                archive.writestr(f"{self.dir.name}/steps_live.npz", tail.getvalue())
+            archive.writestr(
+                f"{self.dir.name}/DOWNLOAD_NOTE.txt",
+                "本压缩包是运行中快照；steps_live.npz 是下载时尚未满块的最后若干控制周期。\n",
+            )
+        return f"{self.dir.name}.zip", output.getvalue()
 
 
 # ---- 读取

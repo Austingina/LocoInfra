@@ -4,7 +4,8 @@
 在运控板上跑（APP 开发者模式选「低层运控开发」、关掉高层运控；吊带放松到不碍起身但能兜住）：
     source /opt/ros/humble/setup.bash && source /robot/software/interface/local_setup.bash
     python3 -m apps.teleop.getup_test --dry-run     # 演练：全流程照跑，指令发到假话题，电机不动
-    python3 -m apps.teleop.getup_test --hold-only   # 只保持当前姿态 6 s，确认下发指令时机器人不乱动
+    python3 -m apps.teleop.getup_test --check-only  # 只读传感器，检查人工摆放的平贴姿是否合格
+    python3 -m apps.teleop.getup_test --hold-only   # 只保持当前姿态 3 s，确认下发指令时机器人不乱动
     python3 -m apps.teleop.getup_test               # 起身 → 站住 → 回车趴下
     python3 -m apps.teleop.getup_test --no-liedown  # 站住时回车直接切阻尼（吊带要兜住）
 """
@@ -25,9 +26,12 @@ sys.path.insert(0, str(PROJECT))
 from apps import ref  # noqa: E402
 from runtime import ObsHistory, Package, PrimeBotBackend, SkillModel  # noqa: E402
 from runtime.body_ref import BodyRef  # noqa: E402
-from runtime.primebot_io import realtime  # noqa: E402
+from runtime.primebot_io import realtime, vendor_mc_running  # noqa: E402
 from apps.teleop.__main__ import DEFAULT_BASE, DEFAULT_SKILL, DRY_TOPIC, POLICY_CORE, POLICY_PRIO  # noqa: E402
 from apps.teleop.machine import FALL_UPRIGHT, LYING_UPRIGHT  # noqa: E402
+from apps.teleop.lying_pose import is_folded_prone  # noqa: E402
+
+START_POSE_JOINT_MAX = 0.7  # rad：人工平贴姿与起身首帧的最大允许单关节差
 
 
 class Log:
@@ -106,13 +110,20 @@ def main() -> None:
     p.add_argument("--no-liedown", action="store_true", help="站住后回车直接切阻尼，不播趴下")
     p.add_argument("--max-stand-s", type=float, default=60.0, help="站住最多多久后自动趴下（或切阻尼）")
     p.add_argument("--ramp-s", type=float, default=3.0, help="从当前姿态插值到起身首帧的时间")
+    p.add_argument("--max-start-error", type=float, default=START_POSE_JOINT_MAX,
+                   help=f"人工平贴姿与起身首帧的最大单关节差（rad，默认 {START_POSE_JOINT_MAX}）")
     p.add_argument("--dry-run", action="store_true", help=f"演练：全流程照跑（站住 2 s），指令发到 {DRY_TOPIC}，电机收不到")
+    p.add_argument("--check-only", action="store_true", help="只读传感器检查是否为标准平贴姿；不发布任何电机指令")
     p.add_argument("--core", type=int, default=POLICY_CORE, help="策略进程绑的核（收发进程在 core 4、5）")
     p.add_argument("--prio", type=int, default=POLICY_PRIO, help="策略进程 SCHED_FIFO 优先级，0 不设")
     p.add_argument("--hold-only", action="store_true", help="只保持当前姿态：从当前姿态 reset、再保持 3 s，报告关节偏离指令的最大值后切阻尼")
     p.add_argument("--yes", action="store_true", help="不等回车确认直接开始")
     p.add_argument("--log", type=Path, default=None, help="记录文件，默认 q1/getup/data/real_policy_<时刻>.npz")
     a = p.parse_args()
+    if a.max_start_error <= 0:
+        sys.exit("--max-start-error 必须大于 0")
+    if a.check_only and (a.hold_only or a.yes):
+        sys.exit("--check-only 不能与 --hold-only / --yes 同时使用")
 
     base, skill = Package.load(a.package), Package.load(a.skill)
     if base.joint_names != skill.joint_names or not np.allclose(base.default_joint_pos, skill.default_joint_pos):
@@ -120,11 +131,10 @@ def main() -> None:
     getup, liedown = BodyRef(skill, ref.find(a.getup_ref)), BodyRef(skill, ref.find(a.liedown_ref))
     print(f"[getup] 技能包 {a.skill}（PD {skill.spec['pd'].get('preset', '?')}），起身 {getup.T} 帧、趴下 {liedown.T} 帧", flush=True)
 
-    robot = PrimeBotBackend(base, ramp_s=a.ramp_s, **({"cmd_topic": DRY_TOPIC} if a.dry_run else {}))
+    dry_backend = {"cmd_topic": DRY_TOPIC, "ramp_track_lim": float("inf"), "track_lim": float("inf")} if a.dry_run else {}
+    robot = PrimeBotBackend(base, ramp_s=a.ramp_s, **dry_backend)
     robot.set_pd(skill.kp, skill.kd)
-    print(f"[getup] 策略进程 {realtime(a.core, a.prio)}", flush=True)
     log = Log()
-    run = Runner(skill, robot, log)
     stamp = time.strftime("%Y%m%d_%H%M%S")
     log_path = a.log or PROJECT / "q1" / "getup" / "data" / f"real_policy_{stamp}.npz"
     phase = 0
@@ -134,13 +144,36 @@ def main() -> None:
         up = robot.upright()
         dq = s.joint_pos - getup.joint_pos[0]
         k = int(np.argmax(np.abs(dq)))
+        start_error = float(abs(dq[k]))
+        folded = is_folded_prone(skill.joint_names, s.joint_pos)
         print(f"[getup] 骨盆重力方向 {np.round(s.projected_gravity, 2)}  upright {up:+.2f}", flush=True)
-        print(f"[getup] 当前关节与起身首帧最大差 {abs(dq[k]):.2f} rad（{skill.joint_names[k]}），插值 {a.ramp_s:.1f} s", flush=True)
+        print(f"[getup] 当前关节与起身首帧最大差 {start_error:.2f} rad（{skill.joint_names[k]}），"
+              f" 门限 {a.max_start_error:.2f} rad，插值 {a.ramp_s:.1f} s", flush=True)
+
+        pose_error = None
+        if up > LYING_UPRIGHT:
+            pose_error = f"upright {up:+.2f} > {LYING_UPRIGHT}：机器人不是俯卧状态"
+        elif folded:
+            pose_error = "深折叠贴卧不是 getup_facedown 的标准平贴首姿"
+        elif start_error > a.max_start_error:
+            pose_error = (f"不接近标准平贴姿：{skill.joint_names[k]} 偏差 {start_error:.2f} rad"
+                          f" > {a.max_start_error:.2f} rad")
+        if a.check_only:
+            if pose_error:
+                sys.exit(f"[getup] 线路 B 摆姿预检失败：{pose_error}；未发布电机指令")
+            print("[getup] 线路 B 摆姿预检通过：可进入 hold-only；未发布电机指令", flush=True)
+            return
+        if pose_error and not a.dry_run and not a.hold_only:
+            sys.exit(f"[getup] 线路 B 起身门禁拒绝：{pose_error}")
 
         if up > LYING_UPRIGHT and not a.dry_run:
             sys.exit(f"[getup] upright {up:+.2f} > {LYING_UPRIGHT}：机器人不是趴着，不起身")
+        if is_folded_prone(skill.joint_names, s.joint_pos) and not a.dry_run and not a.hold_only:
+            sys.exit("[getup] 检测到折叠趴卧：当前 getup_facedown 技能不适用，拒绝插值；请使用折叠起身技能")
         if a.dry_run:
             print(f"[getup] 演练：指令发到 {DRY_TOPIC}，电机收不到", flush=True)
+        elif vendor_mc_running():
+            sys.exit("[getup] 厂商运控 mc 正在运行：请先切换到「低层运控开发」，拒绝并发下发")
         elif not a.yes:
             input("[getup] 确认机器人趴在平地、周围 1 m 无人、吊带放松，回车开始（Ctrl-C 取消）")
 
@@ -153,10 +186,12 @@ def main() -> None:
             moved = np.abs(robot.sense().joint_pos - q_now)
             k = int(np.argmax(moved))
             robot.damp()
-            print(f"[getup] 保持当前姿态 6 s：关节偏离指令最大 {d:.3f} rad（{j}），相对起点最大移动 {moved[k]:.3f} rad"
+            print(f"[getup] 保持当前姿态 3 s：关节偏离指令最大 {d:.3f} rad（{j}），相对起点最大移动 {moved[k]:.3f} rad"
                   f"（{skill.joint_names[k]}），已切阻尼", flush=True)
             return
 
+        print(f"[getup] 策略进程 {realtime(a.core, a.prio)}", flush=True)
+        run = Runner(skill, robot, log)
         robot.reset(getup.joint_pos[0])
         d, j = robot.worst_tracking()
         print(f"[getup] 插值到首帧完成：关节偏离指令最大 {d:.3f} rad（{j}）", flush=True)

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "candidate": "q1_4x_line_b_transition",
+  "backend": "mujoco",
+  "real_robot_enabled": false,
+  "motor_commands_sent": false,
+  "passed": true,
+  "seen_dance": true,
+  "returned_to_walk": true,
+  "final_mode": "WALK",
+  "message": "舞蹈完成，已回到站立；线路 B：圆形摇杆连续前后/转向；可跳舞、正常停止或趴下",
+  "metrics": {
+    "min_upright": 0.917712,
+    "max_gyro_rad_s": 2.845468,
+    "max_tracking_error_rad": 0.39361,
+    "max_target_step_rad": 0.084375,
+    "max_dance_target_step_rad": 0.05,
+    "frames": 1783,
+    "duration_s": 35.66
+  },
+  "source_hashes": {
+    "line_b_machine.py": "e955d8f071f062cb1e3f17ec2a9f46907bc60fb5adecd3d9665ee0d7ded620fe",
+    "dance_4x_deploy.yaml": "8c90e22a1950c925bb0b28a886d193c950bfe42e8171f33a9455b2253fcc4951",
+    "dance_4x_policy.onnx": "abe25161d6bd066fcabb6b35aa7bdbb3098c16de19e6834fcf2ed1b8d449a2ae",
+    "dance_4x_motion.npz": "7f42daf726a32f05b79f1eaa94c84986a6579fda7ccb94a6669f282b019cbaf4"
+  }
+}

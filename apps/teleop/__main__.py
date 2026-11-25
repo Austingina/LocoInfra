@@ -177,15 +177,15 @@ def load_dance(path: Path | None) -> tuple[Package | None, Path | None]:
     return Package.load(path), path / "motion.npz"
 
 
-def load_storage_skill(path: Path | None, motion: Path | None, label: str, arg: str) -> tuple[Package | None, Path | None]:
-    """展开 / 折叠单段策略包；缺失时状态机保持安全拒绝。"""
+def load_folded_skill(path: Path | None, motion: Path | None) -> tuple[Package | None, Path | None]:
+    """折叠趴卧起身包；尚未训练完成时保持 ``None``，状态机会明确拒绝折叠起身。"""
     if path is None:
         if motion is not None:
-            sys.exit(f"--{arg}-ref 必须与 --{arg}-skill 一起使用")
+            sys.exit("--folded-ref 必须与 --folded-skill 一起使用")
         return None, None
     ref_path = motion or path / "motion.npz"
     if not (path / "deploy.yaml").exists() or not (path / "policy.onnx").exists() or not ref_path.exists():
-        sys.exit(f"{label}技能包不完整：{path}（需要 deploy.yaml、policy.onnx 和 {ref_path}）")
+        sys.exit(f"折叠起身技能包不完整：{path}（需要 deploy.yaml、policy.onnx 和 {ref_path}）")
     return Package.load(path), ref_path
 
 
@@ -197,14 +197,10 @@ def main() -> None:
                    help=f"起身 / 趴下技能包（export_package.py），默认 {DEFAULT_SKILL.relative_to(PROJECT)}；不存在时仿真只能行走")
     p.add_argument("--getup-ref", default="getup_facedown", help="参考库里的起身参考（名字或 motion.npz 路径）")
     p.add_argument("--liedown-ref", default="liedown_facedown", help="参考库里的趴下参考")
-    p.add_argument("--unfold-skill", type=Path, default=None,
-                   help="UNFOLD：深度折叠→平趴的单段策略包")
-    p.add_argument("--unfold-ref", type=Path, default=None,
-                   help="UNFOLD 参考 motion.npz；缺省使用 <unfold-skill>/motion.npz")
-    p.add_argument("--fold-skill", type=Path, default=None,
-                   help="FOLD：平趴→深度折叠的单段策略包")
-    p.add_argument("--fold-ref", type=Path, default=None,
-                   help="FOLD 参考 motion.npz；缺省使用 <fold-skill>/motion.npz")
+    p.add_argument("--folded-skill", type=Path, default=None,
+                   help="折叠趴卧→站立的专用单段策略包；未给出时检测到折叠姿态会安全拒绝")
+    p.add_argument("--folded-ref", type=Path, default=None,
+                   help="折叠起身参考 motion.npz；缺省使用 <folded-skill>/motion.npz")
     p.add_argument("--dance", type=Path, default=DEFAULT_DANCE,
                    help=f"舞蹈单段策略包，默认 {DEFAULT_DANCE.relative_to(PROJECT)}")
     p.add_argument("--no-dance", action="store_true", help="不加载舞蹈技能")
@@ -222,10 +218,7 @@ def main() -> None:
     p.add_argument("--record", type=Path, nargs="?", const=REC_SIM, default=None,
                    help=f"活动记录目录（每次启动建一个 rec_<时间>/）；真机缺省 {REC_REAL}，仿真缺省不记、只写 --record 则记到 {REC_SIM.relative_to(PROJECT)}")
     p.add_argument("--no-record", action="store_true", help="不记录")
-    p.add_argument("--sim-start-folded", action="store_true", help="仿真从深度折叠姿态开始，验证 UNFOLD→GETUP")
     a = p.parse_args()
-    if a.sim_start_folded and a.backend != "sim":
-        sys.exit("--sim-start-folded 只用于仿真")
     if a.voice == "auto":
         a.voice = "robot" if a.backend == "real" else "off" if a.script else "local"
 
@@ -242,8 +235,7 @@ def main() -> None:
 
     base = Package.load(a.package)
     skill = load_skill(a.skill, a.backend == "real")
-    unfold_skill, unfold_ref = load_storage_skill(a.unfold_skill, a.unfold_ref, "UNFOLD 展开", "unfold")
-    fold_skill, fold_ref = load_storage_skill(a.fold_skill, a.fold_ref, "FOLD 折叠", "fold")
+    folded_skill, folded_ref = load_folded_skill(a.folded_skill, a.folded_ref)
     dance, dance_ref = load_dance(None if a.no_dance else a.dance)
     getup_ref, liedown_ref = ref.find(a.getup_ref), ref.find(a.liedown_ref)
 
@@ -269,18 +261,14 @@ def main() -> None:
         voice = open_voice(a.voice)
     tele = Teleop(base, skill, robot, getup_ref, liedown_ref, speed_scale=a.speed_scale, voice=voice,
                   pad_lost=a.pad_lost, dance=dance, dance_ref=dance_ref,
-                  unfold_skill=unfold_skill, unfold_ref=unfold_ref,
-                  fold_skill=fold_skill, fold_ref=fold_ref)
-    if a.sim_start_folded:
-        tele.place_folded()
+                  folded_skill=folded_skill, folded_ref=folded_ref)
     rec_root = None if a.no_record else a.record or (REC_REAL if a.backend == "real" else None)
     if rec_root is not None:
         from apps.teleop.recorder import Recorder
 
         tele.recorder = Recorder(rec_root, base.joint_names, base.control_dt,
                                  {"base": a.package, "skill": None if skill is None else skill.root,
-                                  "unfold_skill": None if unfold_skill is None else unfold_skill.root,
-                                  "fold_skill": None if fold_skill is None else fold_skill.root,
+                                  "folded_skill": None if folded_skill is None else folded_skill.root,
                                   "dance": None if dance is None else dance.root},
                                  {k: str(v) if isinstance(v, Path) else v for k, v in vars(a).items()})
 
